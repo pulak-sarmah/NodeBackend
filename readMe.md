@@ -1,1 +1,1 @@
-## Node backend for cloudTube 
+## Node backend for a video sharing plateform (cloudTube)
