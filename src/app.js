@@ -21,12 +21,12 @@ app.use(cookieParser());
 
 //route imports
 import userRouter from "./routes/user.routes.js";
-import videoRouter from "./routes/video.route.js";
-import playlistRouter from "./routes/playlist.route.js";
-import commentRouter from "./routes/comment.route.js";
-import likeRouter from "./routes/like.route.js";
-import subscribtionRouter from "./routes/subscribtion.route.js";
-import tweetRouter from "./routes/tweet.route.js";
+import videoRouter from "./routes/videos.routes.js";
+import playlistRouter from "./routes/playlist.routes.js";
+import commentRouter from "./routes/comment.routes.js";
+import likeRouter from "./routes/like.routes.js";
+import subscribtionRouter from "./routes/subscribtion.routes.js";
+import tweetRouter from "./routes/tweet.routes.js";
 
 // routes declearation
 app.use("/api/v1/users", userRouter);
