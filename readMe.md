@@ -65,3 +65,13 @@ cloudTube is a video sharing platform where users can upload, share, and view vi
 - POST "/toggle-tweet-like/:tweetId" - To toggle like on a tweet
 - POST "/toggle-video-like/:videoId" - To toggle like on a video
 - GET "/liked-videos" - To get all videos a user has liked
+
+### Playlist Routes
+
+- POST "/createPlaylist" - To create a new playlist.
+- GET "/getUserPlaylists" - To retrieve all playlists of a user.
+- GET "/getPlaylistById/:playlistId" - To retrieve a specific playlist by its ID.
+- POST "/addVideoToPlaylist/:playlistId/:videoId" - To add a video to a playlist.
+- DELETE "/removeVideoFromPlaylist/:playlistId/:videoId" - To remove a video from a playlist.
+- DELETE "/deletePlaylist/:playlistId" - To delete a specific playlist.
+- PATCH "/updatePlaylist/:playlistId" - To update the details of a specific playlist.
