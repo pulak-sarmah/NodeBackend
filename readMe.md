@@ -51,3 +51,17 @@ cloudTube is a video sharing platform where users can upload, share, and view vi
 - GET "/api/v1/subscribtion/toggle-subscription/:channelId" - To toggle subscription to a channel
 - GET "/api/v1/subscribtion/get-user-channel-subscribers/:channelId" - To get subscribers of a user's channel
 - GET "/api/v1/subscribtion/get-subscribed-channels" - To get channels a user is subscribed to
+
+### Comment Routes
+
+- GET "/video-comments/:videoId" - To get comments of a video
+- POST "/addComment/:commentId" - To add a comment
+- PATCH "/updateComment/:commentId" - To update a comment by its ID
+- DELETE "/deleteComment/:commentId" - To delete a comment by its ID
+
+### Like Routes
+
+- POST "/toggle-comment-like/:commentId" - To toggle like on a comment
+- POST "/toggle-tweet-like/:tweetId" - To toggle like on a tweet
+- POST "/toggle-video-like/:videoId" - To toggle like on a video
+- GET "/liked-videos" - To get all videos a user has liked
