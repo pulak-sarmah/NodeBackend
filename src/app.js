@@ -35,6 +35,6 @@ app.use("/api/v1/playlists", playlistRouter);
 app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/subscribtion", subscribtionRouter);
-app.use("/app/v1/tweets", tweetRouter);
+app.use("/api/v1/tweets", tweetRouter);
 
 export { app };
