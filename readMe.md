@@ -1,5 +1,7 @@
 ## Node backend for a video sharing plateform (cloudTube)
 
+cloudTube is a video sharing platform where users can upload, share, and view videos. This project is the backend for cloudTube, built with Node.js. It provides APIs for user authentication, video management, tweet management, and subscription management. Users can register, login, upload videos, create tweets, subscribe to channels, and more. The backend is hosted on Render and uses MongoDB for data storage.
+
 ## How to run the project locally
 
 1. Clone this repo
@@ -10,8 +12,6 @@
 ## additionally Server is hosted on render at https://nodebackend-cloudtube.onrender.com/
 
 ## API endpoints
-
-### User Routes
 
 ### User Routes
 
