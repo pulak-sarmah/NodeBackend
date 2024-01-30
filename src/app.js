@@ -4,9 +4,11 @@ import cookieParser from "cookie-parser";
 
 const app = Express();
 
+const clientUrls = process.env.CLIENT_URL.split(",");
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: clientUrls,
     credentials: true,
   })
 );
