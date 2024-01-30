@@ -123,16 +123,62 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: get video by id
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "invalid videoId");
+  }
+
+  const video = await Video.findById(videoId);
+
+  res.status(200).json(new ApiResponse(200, video, "video found succesfully"));
 });
 
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: update video details like title, description, thumbnail
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "invalid videoId");
+  }
+  const { title, description } = req.body;
+
+  const localThumbnailPath = req.file?.path;
+
+  if (!title && !description && !localThumbnailPath) {
+    throw new ApiError(400, "Nothing to update");
+  }
+
+  if (title) {
+    await Video.findByIdAndUpdate(videoId, { title });
+  }
+
+  if (description) {
+    await Video.findByIdAndUpdate(videoId, { description });
+  }
+
+  if (localThumbnailPath) {
+    const thumbnail = await uploadOnCloudinary(localThumbnailPath);
+    await Video.findByIdAndUpdate(videoId, { thumbnail: thumbnail.url });
+  }
+
+  const updatedVideo = await Video.findById(videoId);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, updatedVideo, "video updated successfully"));
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: delete video
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "invalid videoId");
+  }
+
+  await Video.findByIdAndDelete(videoId);
+
+  res.status(200).json(new ApiResponse(200, {}, "video deleted successfully"));
 });
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
