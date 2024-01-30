@@ -90,25 +90,29 @@ const publishAVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Title and description are required");
   }
 
-  const localVideoPath = req.file;
+  const localVideoPath = req.files?.video?.[0]?.path;
+  const localThumbnailPath = req.files?.thumbnail?.[0]?.path;
 
-  if (!localVideoPath) {
-    throw new ApiError(400, "Video is required");
+  if (!localVideoPath || !localThumbnailPath) {
+    throw new ApiError(400, "Video and thumbnail is required");
   }
 
-  const uploadedVideo = await uploadOnCloudinary(localVideoPath);
+  const [videofile, thumbnail] = await Promise.all([
+    uploadOnCloudinary(localVideoPath),
+    uploadOnCloudinary(localThumbnailPath),
+  ]);
 
-  if (!uploadedVideo) {
-    throw new ApiError(500, "Failed to upload video");
+  if (!videofile || !thumbnail) {
+    throw new ApiError(500, "Failed to upload video or thumbnail");
   }
 
   const video = await Video.create({
     title,
     description,
-    videofile: uploadedVideo.url,
-    thumbnail: uploadedVideo.thumbnail,
+    videofile: videofile.url,
+    thumbnail: thumbnail.url,
     owner: req.user._id,
-    duration: uploadedVideo.videoLength,
+    duration: videofile.duration,
   });
 
   res

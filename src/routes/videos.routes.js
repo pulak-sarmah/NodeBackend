@@ -10,6 +10,12 @@ const router = Router();
 router.use(varifyJWT);
 
 router.route("/get-all-videos").get(getAllVideos);
-router.route("/publish-video").post(upload.single("video"), publishAVideo);
+router.route("/publish-video").post(
+  upload.fields([
+    { name: "video", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 },
+  ]),
+  publishAVideo
+);
 
 export default router;
