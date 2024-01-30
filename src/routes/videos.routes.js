@@ -22,8 +22,9 @@ router.route("/publish-video").post(
 );
 
 router.route("/get-video-by-id/:videoId").get(getVideoById);
-export default router;
 
 router.route("/update-video/:videoId").patch(updateVideo);
 
 router.route("/delete-video/:videoId").delete(deleteVideo);
+
+export default router;

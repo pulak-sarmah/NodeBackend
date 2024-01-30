@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . && prettier --check .",
-    "dev": "nodemon -r dotenv/config --trace-warnings src/index.js"
+    "dev": "nodemon -r dotenv/config --trace-warnings src/index.js",
+    "start": "node -r dotenv/config --trace-warnings src/index.js"
   },
   "keywords": [
     "javascript",
