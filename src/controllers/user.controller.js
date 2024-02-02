@@ -213,7 +213,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     req.cookies.refreshToken || req.body.refreshToken;
 
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized request");
+    throw new ApiError(401, "No refresh token found");
   }
 
   try {
@@ -431,7 +431,7 @@ const updateForgotPassword = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ otp });
 
-  if (!user || user.otp !== otp) {
+  if (!user) {
     throw new ApiError(401, "Invalid OTP");
   }
 

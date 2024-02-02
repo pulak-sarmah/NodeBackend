@@ -1,7 +1,7 @@
 import Express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import errorHandler from "./middlewares/errorHandler.js";
 const app = Express();
 
 const clientUrls = process.env.CLIENT_URL.split(",");
@@ -38,5 +38,7 @@ app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/subscribtion", subscribtionRouter);
 app.use("/api/v1/tweets", tweetRouter);
+
+app.use(errorHandler);
 
 export { app };
