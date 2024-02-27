@@ -9,8 +9,6 @@ cloudTube is a video sharing platform where users can upload, share, and view vi
 3. Run `npm start`
 4. Go to `http://localhost:8000`
 
-## additionally Server is hosted on render at https://nodebackend-cloudtube.onrender.com/
-
 ## API endpoints
 
 ### User Routes
