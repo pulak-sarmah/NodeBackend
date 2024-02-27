@@ -4,7 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getVideoComments = asyncHandler(async (req, res) => {
-  //TODO: get all comments for a video
   const { videoId } = req.params;
 
   if (!videoId) {
@@ -13,8 +12,8 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
   const { page = 1, limit = 10 } = req.query;
   const comments = await Comment.find({ video: videoId })
-    .populate("user", "name email")
-    .populate("video", "title description")
+    .populate("video", "_id title description")
+    .populate("owner", "_id name email")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
@@ -63,8 +62,8 @@ const addComment = asyncHandler(async (req, res) => {
     video: videoId,
   });
   await comment
-    .populate("user", "name email")
-    .populate("video", "title description")
+    .populate("owner", "_id name email")
+    .populate("video", "_id title description")
     .execPopulate();
   res
     .status(201)
@@ -92,8 +91,8 @@ const updateComment = asyncHandler(async (req, res) => {
     { new: true }
   );
   await comment
-    .populate("user", "name email")
-    .populate("video", "title description")
+    .populate("owner", "_id name email")
+    .populate("video", "_id title description")
     .execPopulate();
   res
     .status(200)

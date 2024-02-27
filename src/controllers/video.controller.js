@@ -83,7 +83,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
-  // TODO: get video, upload to cloudinary, create video
 
   if (!title || !description) {
     throw new ApiError(400, "Title and description are required");
@@ -121,7 +120,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  //TODO: get video by id
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "invalid videoId");

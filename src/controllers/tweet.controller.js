@@ -5,7 +5,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const createTweet = asyncHandler(async (req, res) => {
-  //TODO: create tweet
   try {
     const { content } = req.body;
 
@@ -24,8 +23,6 @@ const createTweet = asyncHandler(async (req, res) => {
 });
 
 const getUserTweets = asyncHandler(async (req, res) => {
-  // TODO: get user tweets
-
   const userId = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -36,7 +33,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
   const tweets = await Tweet.find({ owner: userId }).populate({
     path: "owner",
-    select: " -refreshToken -otpExpires -otp -password -accessToken",
+    select: "_id name email",
   });
 
   if (!tweets) throw new ApiError(404, "No tweets found");
@@ -45,8 +42,6 @@ const getUserTweets = asyncHandler(async (req, res) => {
 });
 
 const updateTweet = asyncHandler(async (req, res) => {
-  //TODO: update tweet
-
   const tweetId = req.params.id;
 
   if (!mongoose.Types.ObjectId.isValid(tweetId)) {
@@ -71,8 +66,6 @@ const updateTweet = asyncHandler(async (req, res) => {
 });
 
 const deleteTweet = asyncHandler(async (req, res) => {
-  //TODO: delete tweet
-
   const tweetId = req.params.id;
 
   if (!mongoose.Types.ObjectId.isValid(tweetId)) {

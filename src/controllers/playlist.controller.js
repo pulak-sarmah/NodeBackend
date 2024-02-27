@@ -28,13 +28,14 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  //TODO: get user playlists
-
   if (!isValidObjectId(userId)) {
     throw new ApiError(400, "Invalid userId");
   }
 
-  const playlists = await Playlist.find({ owner: userId }).populate("owner");
+  const playlists = await Playlist.find({ owner: userId }).populate({
+    path: "owner",
+    select: "_id username email",
+  });
 
   res
     .status(200)
@@ -45,13 +46,15 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 
 const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
-  //TODO: get playlist by id
 
   if (!isValidObjectId(playlistId)) {
     throw new ApiError(400, "Invalid playlistId");
   }
 
-  const playlist = await Playlist.findById(playlistId).populate("owner");
+  const playlist = await Playlist.findById(playlistId).populate({
+    path: "owner",
+    select: "_id username email",
+  });
 
   res
     .status(200)

@@ -8,9 +8,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const toggleSubscription = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
   const userId = req.user._id;
-  // TODO: toggle subscription
 
-  // 1. check if channel exists
   if (!isValidObjectId(channelId)) {
     throw new ApiError(400, "Invalid channelId");
   }
@@ -46,7 +44,6 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
 
-  // 1. check if channel exists
   if (!isValidObjectId(channelId)) {
     throw new ApiError(400, "Invalid channelId");
   }
@@ -56,10 +53,12 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Channel not found");
   }
 
-  // Find all subscriptions where the channel field is equal to channelId
   const subscriptions = await Subscription.find({
     channel: channelId,
-  }).populate("subscriber");
+  }).populate({
+    path: "subscriber",
+    select: "_id username email",
+  });
 
   // 2. return subscribers
   res.status(200).json(new ApiResponse(200, subscriptions, "Subscribers"));
@@ -69,18 +68,20 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
 
-  // Check if subscriberId is a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(subscriberId)) {
     throw new ApiError(400, "Invalid subscriberId");
   }
 
-  // Find all subscriptions where the subscriber field is equal to subscriberId
   const subscriptions = await Subscription.find({
     subscriber: subscriberId,
-  }).populate("channel");
+  }).populate({
+    path: "channel",
+    select: "_id username email",
+  });
 
-  // Return the list of subscribed channels
-  res.status(200).json(subscriptions);
+  res
+    .status(200)
+    .json(new ApiResponse(200, subscriptions, "Subscribed channels"));
 });
 
 export { toggleSubscription, getUserChannelSubscribers, getSubscribedChannels };

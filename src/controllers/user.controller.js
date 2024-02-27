@@ -28,26 +28,13 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 //register controller
 const registerUser = asyncHandler(async (req, res) => {
-  // get user details from req.body
-  // validaiton of user  details
-  // check if user already exits
-  //  check for images and check for avatar
-  // upload images to cloudinary
-  // create user object - create entry in db
-  // remove password and refresh token from response
-  //check for user creation
-  //return response
-
   const { fullname, username, email, password } = req.body;
 
   const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
 
-  if (
-    [fullname, username, email, password].some((field) => field?.trim === "")
-  ) {
-    throw new ApiError(400, "All fields are required");
+  if (!fullname || !username || !email || !password) {
+    throw new ApiError(400, "All Fields are required");
   }
-
   if (!emailRegex.test(email)) {
     throw new ApiError(400, "Invalid email");
   }
@@ -61,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (existedUser) {
-      throw new ApiError(409, "User already exists");
+      throw new ApiError(403, "User already exists");
     }
 
     const avatarLocalPath = req.files?.avatar?.[0]?.path;
@@ -87,7 +74,7 @@ const registerUser = asyncHandler(async (req, res) => {
       [avatar] = uploadResults;
     }
     if (!avatar) {
-      throw new ApiError(400, "Avatar upload failed");
+      throw new ApiError(500, "Avatar upload failed");
     }
 
     const user = await User.create({
@@ -109,7 +96,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
       .status(201)
-      .json(new ApiResponse(200, createdUser, "User created successfully"));
+      .json(new ApiResponse(201, createdUser, "User created successfully"));
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -176,10 +163,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
 //logout controller
 const logoutUser = asyncHandler(async (req, res) => {
-  // clear refresh token in db
-  // clear cookies
-  // return response
-
   await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -204,11 +187,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 //refresh token controller
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  // get refresh token from cookie
-  // validate refresh token
-  // generate new access token
-  // return response
-
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
 
