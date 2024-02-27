@@ -1,0 +1,1262 @@
+openapi: 3.0.0
+info:
+  title: Content Sharing Platform API
+  version: 1.0.0
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "ExampleUserId"
+        username:
+          type: string
+          example: "exampleuser"
+        email:
+          type: string
+          example: "exampleuser@example.com"
+        fullname:
+          type: string
+          example: "Example User"
+        avatar:
+          type: string
+          example: "https://example.com/avatar.jpg"
+        coverImage:
+          type: string
+          example: "https://example.com/cover.jpg"
+        watchHistory:
+          type: array
+          items:
+            type: string
+            example: "ExampleVideoId"
+        password:
+          type: string
+          example: "hashedpassword"
+        refreshToken:
+          type: string
+          example: "refreshToken"
+        otp:
+          type: string
+          example: "123456"
+        otpExpires:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - username
+        - email
+        - fullname
+        - avatar
+        - password
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  # register
+  /api/v1/users/register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      description: This endpoint is used to register a new user all are required field except cover image.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - fullname
+                - username
+                - email
+                - password
+                - avatar
+              properties:
+                fullname:
+                  type: string
+                  description: The full name of the user.
+                  example: John Doe
+                username:
+                  type: string
+                  description: The username of the user.
+                  example: johndoe
+                email:
+                  type: string
+                  description: The email of the user.
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  description: The password of the user, must be 6 char.
+                  example: mypassword123
+                avatar:
+                  type: string
+                  format: binary
+                  description: The avatar image file of the user
+                coverImage:
+                  type: string
+                  format: binary
+                  description: The cover image file (optional)
+      responses:
+        201:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 65dc7a3b3443fcsdsdc825dee5a0
+                      username:
+                        type: string
+                        example: john
+                      email:
+                        type: string
+                        example: johndoe@example.com
+                      fullname:
+                        type: string
+                        example: John Doe
+                      avatar:
+                        type: string
+                        example: http://res.cloudinary.com/dyozkqjwq/image/upload/v1704a.png
+                      coverImage:
+                        type: string
+                        example: ""
+                      watchHistory:
+                        type: array
+                        items:
+                          type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: 2024-02-26T11:47:07.288Z
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: 2024-02-26T11:47:07.288Z
+                      __v:
+                        type: integer
+                        example: 0
+                  message:
+                    type: string
+                    example: User created successfully
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid request
+        403:
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 403
+                  message:
+                    type: string
+                    example: User already exists
+        500:
+          description: User not created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  message:
+                    type: string
+                    example: User not created
+
+# login
+/api/v1/users/login:
+  post:
+    tags:
+      - Users
+    summary: Login a user
+    description: This endpoint is used to authenticate a user and generate access and refresh tokens.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - password
+            properties:
+              email:
+                type: string
+                description: The email of the user.
+                example: johndoe@example.com
+              username:
+                type: string
+                description: The username of the user.
+                example: johndoe
+              password:
+                type: string
+                description: The password of the user.
+                example: mypassword123
+    responses:
+      200:
+        description: User logged in successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    user:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: 65dc7cebdsdsdsd6778a
+                        username:
+                          type: string
+                          example: johndoe
+                        email:
+                          type: string
+                          example: johndoe@example.com
+                        fullname:
+                          type: string
+                          example: John Doe
+                        avatar:
+                          type: string
+                          example: http://res.cloudinary.com/dyqjwq/image/upload/v1714/o62c4rbqogt.png
+                        coverImage:
+                          type: string
+                          example: ""
+                        watchHistory:
+                          type: array
+                          items:
+                            type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: 2024-02-26T11:58:35.223Z
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: 2024-02-26T11:58:49.376Z
+                        __v:
+                          type: integer
+                          example: 0
+                    accessToken:
+                      type: string
+                      example: "eyJhbGR5cCI6Ikhjrbgfval;eikrXNlcmHAiOjE3ghrt38ojTSY6Vf730G-cAa38"
+                    refreshToken:
+                      type: string
+                      example: "eyJhbGciertbrtbCJ9.eyJfaWQ5yQ5wi9Ow"
+                message:
+                  type: string
+                  example: User logged in successfully
+      400:
+        description: Invalid request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: Invalid request
+      404:
+        description: User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: User not found
+      401:
+        description: Password is incorrect
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Password is incorrect
+      500:
+        description: User not logged in due to internal error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: User not logged in due to internal error
+
+#logout
+/api/v1/users/logout:
+  get:
+    tags:
+      - Users
+    summary: Logout a user
+    description: This endpoint is used to logout a user and invalidate the refresh token.
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: User logged out successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: "null"
+                message:
+                  type: string
+                  example: User logged out successfully
+      500:
+        description: User not logged out
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: User not logged out
+
+# refresh token
+/api/v1/users/refresh-token:
+  get:
+    tags:
+      - Users
+    summary: Refresh access token
+    description: This endpoint is used to refresh the access token using a valid refresh token. The refresh token can be sent in the request body or cookies.
+    parameters:
+      - in: cookie
+        name: refreshToken
+        schema:
+          type: string
+        description: The refresh token of the user.
+    responses:
+      200:
+        description: Access token refreshed successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    accessToken:
+                      type: string
+                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfagbffbgdsal;eikrjfvthhaWwuY29fyjtyjtyMzUxMjl9.jvR4rsthgbertghrt38ojTSY6Vf730G-cAa38"
+                    refreshToken:
+                      type: string
+                      example: "eyJhbGciOiJerhrhfggherbvertbrtbCJ9.eyJfaWQiOifgbfggxMjcyOX0.1Nl-U2reigpVfbhrtbv8q05yQ5wi9Ow"
+                message:
+                  type: string
+                  example: Access token refreshed successfully
+      401:
+        description: Invalid or expired refresh token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Invalid or expired refresh token
+      500:
+        description: Token not refreshed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: Token not refreshed
+
+# change password
+/api/v1/users/change-password:
+  post:
+    tags:
+      - Users
+    summary: Change current user password
+    description: This endpoint is used to change the current user's password. The user must be authenticated (JWT middleware).
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - oldPassword
+              - newPassword
+            properties:
+              oldPassword:
+                type: string
+                description: The old password of the user.
+                example: oldpassword123
+              newPassword:
+                type: string
+                description: The new password of the user.
+                example: newpassword123
+    responses:
+      200:
+        description: Password changed successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: Password changed successfully
+      401:
+        description: Unauthorized or password is incorrect
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Unauthorized or password is incorrect
+      500:
+        description: Password not changed due to internal error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: Password not changed due to internal error
+
+# request update password
+/api/v1/users/reset-password:
+  post:
+    tags:
+      - Users
+    summary: Request update password
+    description: This endpoint is used to request a password update. An OTP is sent to the user's email.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+                description: The email of the user.
+                example: user@example.com
+    responses:
+      200:
+        description: OTP sent successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: OTP sent
+      400:
+        description: Email is required
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: Email is required
+      404:
+        description: User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: User not found
+      500:
+        description: OTP not sent due to internal error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: OTP not sent due to internal error
+
+# verify OTP and password update
+
+/api/v1/users/reset-password-verify:
+  post:
+    tags:
+      - Users
+    summary: Update forgot password
+    description: This endpoint is used to update the password of a user who forgot their password. The user must provide a valid OTP. OTP expires in 10 minutes. The user must provide a new password and the OTP sent to their email
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - otp
+              - newPassword
+            properties:
+              otp:
+                type: string
+                description: The OTP sent to the user's email.
+                example: 1234
+              newPassword:
+                type: string
+                description: The new password of the user.
+                example: newpassword123
+    responses:
+      200:
+        description: Password updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    user:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: "65dc832065ab8e51c54620b9"
+                        username:
+                          type: string
+                          example: "john doe"
+                        email:
+                          type: string
+                          format: email
+                          example: "johndoe@example.com"
+                        fullname:
+                          type: string
+                          example: "Pulak Sarmah"
+                        avatar:
+                          type: string
+                          format: uri
+                          example: "http://res.cloudinary.com/dyozkqwq/image/upload/v180303/qu4j7z9.png"
+                        coverImage:
+                          type: string
+                          format: uri
+                          example: ""
+                        watchHistory:
+                          type: array
+                          items:
+                            type: string
+                        otp:
+                          type: "null"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2024-02-26T12:25:04.408Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2024-02-26T12:52:03.861Z"
+                        __v:
+                          type: integer
+                          example: 0
+                        otpExpires:
+                          type: string
+                          format: date-time
+                          example: "2024-02-26T12:59:42.466Z"
+                message:
+                  type: string
+                  example: Password updated successfully
+      400:
+        description: OTP and newPassword is required
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: OTP and newPassword is required
+      401:
+        description: Invalid OTP or OTP has expired
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Invalid OTP or OTP has expired
+      500:
+        description: Password not updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: Password not updated
+
+# get user profile
+/api/v1/users/profile:
+  get:
+    tags:
+      - Users
+    summary: Get user profile
+    description: This endpoint is used to get the profile of the currently authenticated user. id fetched from JWT token.
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: User data fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "65dc832065ab8e51c54620b9"
+                    username:
+                      type: string
+                      example: "john"
+                    email:
+                      type: string
+                      format: email
+                      example: "johndoe@example.com"
+                    fullname:
+                      type: string
+                      example: "John Doe"
+                    avatar:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozkqjwq/image/upad/v1703/q22dj7z9.png"
+                    coverImage:
+                      type: string
+                      format: uri
+                      example: ""
+                    watchHistory:
+                      type: array
+                      items:
+                        type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T12:25:04.408Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T12:52:03.861Z"
+                    __v:
+                      type: integer
+                      example: 0
+                message:
+                  type: string
+                  example: "User data fetched successfully"
+      401:
+        description: Not authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Not authenticated
+
+# update account details
+/api/v1/users/update-profile:
+  patch:
+    tags:
+      - Users
+    summary: Update account details
+    description: This endpoint is used to update the account details of the currently authenticated user. The user must provide either fullname or email.
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                description: The new email of the user.
+                example: "johndoe@example.com"
+              fullname:
+                type: string
+                description: The new fullname of the user.
+                example: "John Doe"
+    responses:
+      200:
+        description: Account updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "65dc832065add51c54620b9"
+                    username:
+                      type: string
+                      example: "john"
+                    email:
+                      type: string
+                      format: email
+                      example: "johndoe@example.com"
+                    fullname:
+                      type: string
+                      example: "John Doe"
+                    avatar:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozkqjwq/image/upload/v1708903/q22dj9.png"
+                    coverImage:
+                      type: string
+                      format: uri
+                      example: ""
+                    watchHistory:
+                      type: array
+                      items:
+                        type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T12:25:04.408Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T13:12:13.112Z"
+                    __v:
+                      type: integer
+                      example: 0
+                message:
+                  type: string
+                  example: "Account updated"
+      400:
+        description: Fullname or email is required
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: Fullname or email is required
+      401:
+        description: Not authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Not authenticated
+
+# update avatar
+/api/v1/users/update-avatar:
+  patch:
+    tags:
+      - Users
+    summary: Update avatar
+    description: This endpoint is used to update the avatar of the currently authenticated user. The user must provide a new avatar.
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              avatar:
+                type: string
+                format: binary
+                description: The new avatar of the user.
+    responses:
+      200:
+        description: Avatar updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "65dc83206b8e51c54620b9"
+                    username:
+                      type: string
+                      example: "john"
+                    email:
+                      type: string
+                      format: email
+                      example: "johndoe@example.com"
+                    fullname:
+                      type: string
+                      example: "John Doe"
+                    avatar:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozkqjwq/image/upload/v1753809/wnhfcxczlli.png"
+                    coverImage:
+                      type: string
+                      format: uri
+                      example: ""
+                    watchHistory:
+                      type: array
+                      items:
+                        type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T12:25:04.408Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T13:23:29.845Z"
+                    __v:
+                      type: integer
+                      example: 0
+                message:
+                  type: string
+                  example: "Avatar updated"
+      400:
+        description: No avatar found or Avatar upload failed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: No avatar found or Avatar upload failed
+      401:
+        description: Not authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Not authenticated
+# update cover image
+/api/v1/users/update-cover-image:
+  patch:
+    tags:
+      - Users
+    summary: Update cover image
+    description: This endpoint is used to update the cover image of the currently authenticated user. The user must provide a new cover image.
+    security:
+      - BearerAuth: [] # use the security scheme named "BearerAuth" defined "components"
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              coverImage:
+                type: string
+                format: binary
+                description: The new cover image of the user.
+    responses:
+      200:
+        description: Cover image updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "65dc832065ab8e51c54620b9"
+                    username:
+                      type: string
+                      example: "john"
+                    email:
+                      type: string
+                      format: email
+                      example: "johndoe@example.com"
+                    fullname:
+                      type: string
+                      example: "John Doe"
+                    avatar:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozjwq/image/upload/v1708953809/wnasm4yli.png"
+                    coverImage:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozkqjwq/image/upload/v17307/imyvl64.png"
+                    watchHistory:
+                      type: array
+                      items:
+                        type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T12:25:04.408Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T13:31:48.558Z"
+                    __v:
+                      type: integer
+                      example: 0
+                message:
+                  type: string
+                  example: "Cover image updated"
+      400:
+        description: No cover image found or Cover image upload failed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: No cover image found or Cover image upload failed
+      401:
+        description: Not authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Not authenticated
+
+# get user channel profile
+/api/v1/users/user-channel-details/{username}:
+  get:
+    tags:
+      - Users
+    summary: Get user channel profile
+    description: This endpoint is used to get the channel profile of a user. The user must be authenticated.
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+        description: The username of the user.
+    responses:
+      200:
+        description: User channel fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    fullName:
+                      type: string
+                      example: "John Doe"
+                    username:
+                      type: string
+                      example: "john"
+                    subscribersCount:
+                      type: integer
+                      example: 100
+                    channelSubscribedToCount:
+                      type: integer
+                      example: 50
+                    isSubscribed:
+                      type: boolean
+                      example: true
+                    avatar:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozkqjwq/image/upload/v170809/wnhfcxczlsm4yli.png"
+                    coverImage:
+                      type: string
+                      format: uri
+                      example: "http://res.cloudinary.com/dyozkqjwq/image/upload/v17084307/imyvqgcny64.png"
+                    email:
+                      type: string
+                      format: email
+                      example: "johndoe@example.com"
+                message:
+                  type: string
+                  example: "User channel fetched successfully"
+      400:
+        description: Username is required
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: Username is required
+      404:
+        description: Channel not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: Channel not found
+      401:
+        description: Not authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Not authenticated
+
+# get watch history
+/api/v1/users/watch-history:
+  get:
+    tags:
+      - Users
+    summary: Get watch history
+    description: This endpoint is used to get the watch history of the currently authenticated user.
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: Watch history fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "60d3b41c8534a2d9c4071c83"
+                      title:
+                        type: string
+                        example: "Sample Video Title"
+                      description:
+                        type: string
+                        example: "This is a sample video description."
+                      url:
+                        type: string
+                        format: uri
+                        example: "http://example.com/sample-video.mp4"
+                      owner:
+                        type: object
+                        properties:
+                          fullName:
+                            type: string
+                            example: "John Doe"
+                          username:
+                            type: string
+                            example: "john"
+                          avatar:
+                            type: string
+                            format: uri
+                            example: "http://example.com/avatar.jpg"
+                message:
+                  type: string
+                  example: "Watch history fetched successfully"
+      401:
+        description: Not authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: Not authenticated

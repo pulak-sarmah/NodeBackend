@@ -1,0 +1,243 @@
+components:
+  schemas:
+    Like:
+      type: object
+      properties:
+        video:
+          type: string
+          format: uuid
+          description: The ID of the video that was liked
+        comment:
+          type: string
+          format: uuid
+          description: The ID of the comment that was liked
+        tweet:
+          type: string
+          format: uuid
+          description: The ID of the tweet that was liked
+        likedBy:
+          type: string
+          format: uuid
+          description: The ID of the user who liked the item
+      required:
+        - likedBy
+
+/api/v1/likes/video/{videoId}:
+  post:
+    tags:
+      - Likes
+    summary: Toggle a like on a video
+    description: This endpoint is used to toggle a like on a video
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        description: The ID of the video to like/unlike
+    responses:
+      200:
+        description: Successfully toggled like
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Successfully toggle liked"
+      400:
+        description: Invalid videoId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid videoId"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/likes/comment/{commentId}:
+  post:
+    tags:
+      - Likes
+    summary: Toggle a like on a comment
+    description: This endpoint is used to toggle a like on a comment
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: commentId
+        required: true
+        schema:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        description: The ID of the comment to like/unlike
+    responses:
+      200:
+        description: Successfully toggled like
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Successfully toggle liked"
+      400:
+        description: Invalid commentId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid commentId"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/likes/tweet/{tweetId}:
+  post:
+    tags:
+      - Likes
+    summary: Toggle a like on a tweet
+    description: This endpoint is used to toggle a like on a tweet
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: tweetId
+        required: true
+        schema:
+          type: string
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        description: The ID of the tweet to like/unlike
+    responses:
+      200:
+        description: Successfully toggled like
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Successfully toggle liked"
+      400:
+        description: Invalid tweetId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid tweetId"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/likes/videos:
+  get:
+    tags:
+      - Likes
+    summary: Get liked videos
+    description: This endpoint is used to get all videos liked by the authenticated user
+    security:
+      - bearerAuth: []
+    responses:
+      200:
+        description: Successfully retrieved liked videos
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                  properties:
+                    likedVideos:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Video"
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"

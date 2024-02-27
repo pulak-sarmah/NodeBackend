@@ -1,0 +1,685 @@
+components:
+  schemas:
+    Video:
+      type: object
+      properties:
+        videofile:
+          type: string
+          description: Cloudinary URL
+          example: "https://res.cloudinary.com/example/video/upload/v1621234567/sample.mp4"
+        thumbnail:
+          type: string
+          description: Cloudinary URL
+          example: "https://res.cloudinary.com/example/image/upload/v1621234567/sample.jpg"
+        title:
+          type: string
+          example: "Video Title"
+        description:
+          type: string
+          example: "Video Description"
+        duration:
+          type: integer
+          example: 120
+        views:
+          type: integer
+          example: 0
+        isPublished:
+          type: boolean
+          example: true
+        owner:
+          type: string
+          description: User ID
+          example: "ExampleUserId"
+      required:
+        - videofile
+        - thumbnail
+        - title
+        - description
+        - duration
+
+/api/v1/videos:
+  get:
+    tags:
+      - Videos
+    summary: Get All Videos of a User/channel
+    description: This endpoint is used to get all videos of a user/channel
+    security:
+      - Bearer: []
+    parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          example: 10
+      - in: query
+        name: sortBy
+        schema:
+          type: string
+          example: "createdAt"
+      - in: query
+        name: sortType
+        schema:
+          type: integer
+          example: -1
+      - in: query
+        name: query
+        schema:
+          type: string
+          example: "Title of the video"
+      - in: query
+        name: userId
+        schema:
+          type: string
+          example: "60d3b41c8534a2d9c4071c83"
+    responses:
+      200:
+        description: Videos found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    videos:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "60d3b41c8534a2d9c4071c83"
+                          videofile:
+                            type: string
+                            format: uri
+                            example: "http://dummy.com/sample-video.mp4"
+      400:
+        description: Invalid userId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid userId"
+      404:
+        description: No videos found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "No videos found"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: "Unauthorized request"
+                error:
+                  type: []
+                data:
+                  type: null
+/api/v1/videos/publish-video:
+  post:
+    tags:
+      - Videos
+    summary: Publish a Video
+    description: This endpoint is used to publish a video to the platform by a user/channel
+    security:
+      - BearerAuth: []
+    requestBody:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "Sample Video Title"
+              description:
+                type: string
+                example: "This is a sample video description"
+              video:
+                type: string
+                format: binary
+              thumbnail:
+                type: string
+                format: binary
+    responses:
+      201:
+        description: Video published successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 201
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "ExampleId"
+                    videofile:
+                      type: string
+                      format: uri
+                      example: "http://example.com/sample-video.mp4"
+                    thumbnail:
+                      type: string
+                      format: uri
+                      example: "http://example.com/sample-thumbnail.png"
+                    title:
+                      type: string
+                      example: "Sample Video"
+                    description:
+                      type: string
+                      example: "This is a sample video"
+                    duration:
+                      type: integer
+                      example: 14
+                    views:
+                      type: integer
+                      example: 0
+                    isPublished:
+                      type: boolean
+                      example: true
+                    owner:
+                      type: string
+                      example: "ExampleOwnerId"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T15:06:22.634Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T15:06:22.634Z"
+                message:
+                  type: string
+                  example: "Video published successfully"
+      400:
+        description: Title, description, video, or thumbnail missing
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Title and description are required"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: "Unauthorized request"
+                error:
+                  type: []
+                data:
+                  type: null
+      500:
+        description: Failed to upload video or thumbnail
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 500
+                message:
+                  type: string
+                  example: "Failed to upload video or thumbnail"
+
+/api/v1/videos/{videoId}:
+  get:
+    tags:
+      - Videos
+    summary: Get Video by ID
+    description: This endpoint is used to get a video by its ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    responses:
+      200:
+        description: Video found successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "ExampleVideoId"
+                    videofile:
+                      type: string
+                      format: uri
+                      example: "http://example.com/sample-video.mp4"
+                    thumbnail:
+                      type: string
+                      format: uri
+                      example: "http://example.com/sample-thumbnail.png"
+                    title:
+                      type: string
+                      example: "Sample Video"
+                    description:
+                      type: string
+                      example: "This is a sample video"
+                    duration:
+                      type: integer
+                      example: 14
+                    views:
+                      type: integer
+                      example: 0
+                    isPublished:
+                      type: boolean
+                      example: true
+                    owner:
+                      type: string
+                      example: "ExampleOwnerId"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T15:06:22.634Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T15:06:22.634Z"
+                message:
+                  type: string
+                  example: "Video found successfully"
+      400:
+        description: Invalid videoId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid videoId"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: "Unauthorized request"
+                error:
+                  type: []
+                data:
+                  type: null
+
+      404:
+        description: Video not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Video not found"
+
+/api/v1/videos/update-video/{videoId}:
+  patch:
+    tags:
+      - Videos
+    summary: Update Video by ID
+    description: This endpoint is used to update a video by its ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    requestBody:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                example: "Updated Sample Video"
+              description:
+                type: string
+                example: "This is an updated sample video"
+              thumbnail:
+                type: string
+                format: binary
+    responses:
+      200:
+        description: Video updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "ExampleVideoId"
+                    videofile:
+                      type: string
+                      format: uri
+                      example: "http://example.com/sample-video.mp4"
+                    thumbnail:
+                      type: string
+                      format: uri
+                      example: "http://example.com/updated-sample-thumbnail.png"
+                    title:
+                      type: string
+                      example: "Updated Sample Video"
+                    description:
+                      type: string
+                      example: "This is an updated sample video"
+                    duration:
+                      type: integer
+                      example: 14
+                    views:
+                      type: integer
+                      example: 0
+                    isPublished:
+                      type: boolean
+                      example: true
+                    owner:
+                      type: string
+                      example: "ExampleOwnerId"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T15:06:22.634Z"
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-26T15:06:22.634Z"
+                message:
+                  type: string
+                  example: "Video updated successfully"
+      400:
+        description: Invalid videoId or nothing to update
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid videoId or nothing to update"
+      404:
+        description: Video not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Video not found"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: "Unauthorized request"
+                error:
+                  type: []
+                data:
+                  type: null
+
+/api/v1/videos/delete-video/{videoId}:
+  delete:
+    tags:
+      - Videos
+    summary: Delete Video by ID
+    description: This endpoint is used to delete a video by its ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    responses:
+      200:
+        description: Video deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Video deleted successfully"
+      400:
+        description: Invalid videoId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid videoId"
+      404:
+        description: Video not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Video not found"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: "Unauthorized request"
+                error:
+                  type: []
+                data:
+                  type: null
+
+/api/v1/videos/toggle-publish-status/{videoId}:
+  patch:
+    tags:
+      - Videos
+    summary: Toggle Video Publish Status by ID
+    description: This endpoint is used to toggle the publish status of a video by its ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    responses:
+      200:
+        description: Video publish status updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                  properties:
+                    isPublished:
+                      type: boolean
+                      example: true
+                message:
+                  type: string
+                  example: "Video publish status updated successfully"
+      400:
+        description: Invalid videoId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid videoId"
+      403:
+        description: You are not owner of this video
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 403
+                message:
+                  type: string
+                  example: "You are not owner of this video"
+      404:
+        description: Video not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Video not found"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: "Unauthorized request"
+                error:
+                  type: []
+                data:
+                  type: null

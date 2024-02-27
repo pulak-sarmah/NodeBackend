@@ -1,0 +1,416 @@
+components:
+  schemas:
+    Comment:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+          readOnly: true
+        content:
+          type: string
+          description: The content of the comment
+        video:
+          type: string
+          format: uuid
+          description: The ID of the video the comment is associated with
+        owner:
+          type: string
+          format: uuid
+          description: The ID of the user who owns the comment
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the comment was created
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the comment was last updated
+      required:
+        - content
+        - video
+
+/api/v1/comments/{videoId}/comments:
+  get:
+    tags:
+      - Comments
+    summary: Get all comments for a video
+    description: This endpoint is used to get all comments for a video by the video's ID
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          default: 10
+    responses:
+      200:
+        description: Successfully fetched comments
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                  properties:
+                    comments:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          content:
+                            type: string
+                            example: "This is a comment"
+                          video:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: "ExampleVideoId"
+                              title:
+                                type: string
+                                example: "ExampleTitle"
+                              description:
+                                type: string
+                                example: "ExampleDescription"
+                          owner:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: "ExampleUserId"
+                              name:
+                                type: string
+                                example: "ExampleName"
+                              email:
+                                type: string
+                                example: "example@example.com"
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+                    pagination:
+                      type: object
+                      properties:
+                        totalPages:
+                          type: integer
+                        currentPage:
+                          type: integer
+                        hasNextPage:
+                          type: boolean
+                        hasPrevPage:
+                          type: boolean
+                        nextPage:
+                          type: integer
+                        prevPage:
+                          type: integer
+                message:
+                  type: string
+                  example: "Successfully fetched comments"
+      400:
+        description: Please provide a video id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Please provide a video id"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/comments/add/{videoId}/:
+  post:
+    tags:
+      - Comments
+    summary: Add a comment to a video
+    description: This endpoint is used to add a comment to a video by the video's ID
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              text:
+                type: string
+                example: "This is a comment"
+    responses:
+      201:
+        description: Successfully created comment
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                  properties:
+                    comment:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                          example: "This is a comment"
+                        owner:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "ExampleUserId"
+                            name:
+                              type: string
+                              example: "ExampleName"
+                            email:
+                              type: string
+                              example: "example@example.com"
+                        video:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "ExampleVideoId"
+                            title:
+                              type: string
+                              example: "ExampleTitle"
+                            description:
+                              type: string
+                              example: "ExampleDescription"
+                message:
+                  type: string
+                  example: "Successfully created comment"
+      400:
+        description: Please provide a video id or comment text
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Please provide a video id or comment text"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/comments/update/{commentId}:
+  patch:
+    tags:
+      - Comments
+    summary: Update a comment
+    description: This endpoint is used to update a comment by the comment's ID
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: commentId
+        required: true
+        schema:
+          type: string
+          example: "ExampleCommentId"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              text:
+                type: string
+                example: "This is an updated comment"
+    responses:
+      200:
+        description: Successfully updated comment
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                  properties:
+                    comment:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                          example: "This is an updated comment"
+                        owner:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "ExampleUserId"
+                            name:
+                              type: string
+                              example: "ExampleName"
+                            email:
+                              type: string
+                              example: "example@example.com"
+                        video:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "ExampleVideoId"
+                            title:
+                              type: string
+                              example: "ExampleTitle"
+                            description:
+                              type: string
+                              example: "ExampleDescription"
+                message:
+                  type: string
+                  example: "Successfully updated comment"
+      400:
+        description: Please provide a comment id or comment text
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Please provide a comment id or comment text"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/comments/delete/{commentId}:
+  delete:
+    tags:
+      - Comments
+    summary: Delete a comment
+    description: This endpoint is used to delete a comment by the comment's ID
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: commentId
+        required: true
+        schema:
+          type: string
+          example: "ExampleCommentId"
+    responses:
+      200:
+        description: Successfully deleted comment
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: string
+                  example: null
+                message:
+                  type: string
+                  example: "Successfully deleted comment"
+      400:
+        description: Please provide a comment id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Please provide a comment id"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"

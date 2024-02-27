@@ -1,0 +1,522 @@
+components:
+  schemas:
+    Playlist:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "ExamplePlaylistId"
+        name:
+          type: string
+          example: "My Playlist"
+        description:
+          type: string
+          example: "This is my playlist"
+        videos:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string
+          example: "ExampleUserId"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - description
+
+    PlaylistWithOwner:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "ExamplePlaylistId"
+        name:
+          type: string
+          example: "My Playlist"
+        description:
+          type: string
+          example: "This is my playlist"
+        videos:
+          type: array
+          items:
+            type: string
+        owner:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: "ExampleUserId"
+            username:
+              type: string
+              example: "ExampleUsername"
+            email:
+              type: string
+              example: "johndoe@example.com"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+/api/v1/playlists:
+  post:
+    tags:
+      - Playlists
+    summary: Create a new playlist
+    description: This endpoint is used to create a new playlist
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "My Playlist"
+              description:
+                type: string
+                example: "This is my playlist"
+    responses:
+      201:
+        description: Successfully created playlist
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  $ref: "#/components/schemas/Playlist"
+                message:
+                  type: string
+                  example: "Successfully created playlist"
+      400:
+        description: Please provide a name and description
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Please provide a name and description"
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"
+
+/api/v1/playlists/{userId}:
+  get:
+    tags:
+      - Playlists
+    summary: Get user's playlists by user ID
+    description: This endpoint is used to retrieve all playlists owned by a specific user, with owner details populated
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+          example: "ExampleUserId"
+    responses:
+      200:
+        description: Successfully retrieved playlists
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/PlaylistWithOwner"
+                message:
+                  type: string
+                  example: "Successfully retrieved playlists"
+      400:
+        description: Invalid userId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid userId"
+
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"
+
+/api/v1/playlists/{playlistId}:
+  get:
+    tags:
+      - Playlists
+    summary: Get a playlist by playlist ID
+    description: This endpoint is used to retrieve a playlist by its ID, with owner details populated
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: playlistId
+        required: true
+        schema:
+          type: string
+          example: "ExamplePlaylistId"
+    responses:
+      200:
+        description: Successfully retrieved playlist
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  $ref: "#/components/schemas/PlaylistWithOwner"
+                message:
+                  type: string
+                  example: "Successfully retrieved playlist"
+      400:
+        description: Invalid playlistId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid playlistId"
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"
+
+/api/v1/playlists/{playlistId}/videos/{videoId}:
+  post:
+    tags:
+      - Playlists
+    summary: Add a video to a playlist
+    description: This endpoint is used to add a video to a playlist by their IDs
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: playlistId
+        required: true
+        schema:
+          type: string
+          example: "ExamplePlaylistId"
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    responses:
+      200:
+        description: Successfully added video to playlist
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  $ref: "#/components/schemas/Playlist"
+                message:
+                  type: string
+                  example: "Successfully added video to playlist"
+      400:
+        description: Invalid playlistId or videoId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid playlistId or videoId"
+      404:
+        description: Playlist or Video not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Playlist or Video not found"
+
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"
+
+/api/v1/playlists/remove/{playlistId}/videos/{videoId}:
+  delete:
+    tags:
+      - Playlists
+    summary: Remove a video from a playlist
+    description: This endpoint is used to remove a video from a playlist by their IDs
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: playlistId
+        required: true
+        schema:
+          type: string
+          example: "ExamplePlaylistId"
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+          example: "ExampleVideoId"
+    responses:
+      200:
+        description: Successfully deleted video from playlist
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Successfully deleted video from playlist"
+      400:
+        description: Invalid playlistId or videoId, or not provided
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid playlistId or videoId, or not provided"
+
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"
+
+/api/v1/playlists/delete/{playlistId}:
+  delete:
+    tags:
+      - Playlists
+    summary: Delete a playlist
+    description: This endpoint is used to delete a playlist by its ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: playlistId
+        required: true
+        schema:
+          type: string
+          example: "ExamplePlaylistId"
+    responses:
+      200:
+        description: Successfully deleted playlist
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Successfully deleted playlist"
+      400:
+        description: Invalid playlistId or playlistId not provided
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid playlistId or playlistId not provided"
+
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"
+
+/api/v1/playlists/update/{playlistId}:
+  patch:
+    tags:
+      - Playlists
+    summary: Update a playlist
+    description: This endpoint is used to update a playlist by its ID
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: playlistId
+        required: true
+        schema:
+          type: string
+          example: "ExamplePlaylistId"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Updated Playlist Name"
+              description:
+                type: string
+                example: "Updated Playlist Description"
+    responses:
+      200:
+        description: Successfully updated playlist
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                data:
+                  $ref: "#/components/schemas/Playlist"
+                message:
+                  type: string
+                  example: "Successfully updated playlist"
+      400:
+        description: Invalid playlistId or playlistId not provided, or name and description not provided
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid playlistId or playlistId not provided, or name and description not provided"
+
+      401:
+        description: Unauthorized request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized request"

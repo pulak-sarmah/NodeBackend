@@ -1,0 +1,243 @@
+components:
+  schemas:
+    Subscription:
+      type: object
+      properties:
+        subscriber:
+          type: string
+          description: User ID of the subscriber
+          example: "ExampleUserId"
+        channel:
+          type: string
+          description: User ID of the channel
+          example: "ExampleChannelId"
+      required:
+        - subscriber
+        - channel
+
+/api/v1/subscriptions/toggle/{channelId}:
+  get:
+    tags:
+      - Subscriptions
+    summary: Toggle a subscription to a channel
+    description: This endpoint is used to subscribe or unsubscribe a user to a channel by the channel's ID, user's ID is taken from the token
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: channelId
+        required: true
+        schema:
+          type: string
+          example: "ExampleChannelId"
+    responses:
+      200:
+        description: Successfully subscribed to or unsubscribed from channel
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: object
+                message:
+                  type: string
+                  example: "Subscribed to channel"
+      400:
+        description: Invalid channelId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid channelId"
+      404:
+        description: Channel not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Channel not found"
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+/api/v1/subscriptions/get-subscribers/{channelId}:
+  get:
+    tags:
+      - Subscriptions
+    summary: Get a list of subscribers for a channel
+    description: This endpoint is used to get a list of subscribers for a channel by the channel's ID
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: channelId
+        required: true
+        schema:
+          type: string
+          example: "ExampleChannelId"
+    responses:
+      200:
+        description: Successfully retrieved list of subscribers
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 200
+                data:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "ExampleUserId"
+                      username:
+                        type: string
+                        example: "ExampleUsername"
+                      email:
+                        type: string
+                        example: "example@example.com"
+                message:
+                  type: string
+                  example: "Subscribers"
+      400:
+        description: Invalid channelId
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 400
+                message:
+                  type: string
+                  example: "Invalid channelId"
+      404:
+        description: Channel not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 404
+                message:
+                  type: string
+                  example: "Channel not found"
+
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusCode:
+                  type: integer
+                  example: 401
+                message:
+                  type: string
+                  example: "Unauthorized"
+
+paths:
+  /api/v1/subscriptions/{subscriberId}/channels:
+    get:
+      tags:
+        - Subscriptions
+      summary: Get a list of channels to which a user has subscribed
+      description: This endpoint is used to get a list of channels to which a user has subscribed by the user's ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: subscriberId
+          required: true
+          schema:
+            type: string
+            example: "ExampleUserId"
+      responses:
+        200:
+          description: Successfully retrieved list of subscribed channels
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: "ExampleChannelId"
+                        username:
+                          type: string
+                          example: "ExampleUsername"
+                        email:
+                          type: string
+                          example: "example@example.com"
+                  message:
+                    type: string
+                    example: "Subscribed channels"
+        400:
+          description: Invalid subscriberId
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: "Invalid subscriberId"
+
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: "Unauthorized"
