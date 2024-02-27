@@ -10,10 +10,8 @@ const router = Router();
 
 router.use(varifyJWT);
 
-router.route("/toggle-subscription/:channelId").get(toggleSubscription);
-router
-  .route("/get-user-channel-subscribers/:channelId")
-  .get(getUserChannelSubscribers);
-router.route("/get-subscribed-channels").get(getSubscribedChannels);
+router.route("/toggle/:channelId").get(toggleSubscription);
+router.route("/get-subscribers/:channelId").get(getUserChannelSubscribers);
+router.route("/:subscriberId/channels").get(getSubscribedChannels);
 
 export default router;

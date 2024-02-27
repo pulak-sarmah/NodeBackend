@@ -29,14 +29,14 @@ router.route("/register").post(
 );
 
 router.route("/login").post(loginUser);
-router.route("/refresh-token").post(refreshAccessToken);
+router.route("/refresh-token").get(refreshAccessToken);
 router.route("/reset-password").post(requestUpdatePassword);
 router.route("/reset-password-verify").post(updateForgotPassword);
 
 //secured routes
-router.route("/logout").post(varifyJWT, logoutUser);
+router.route("/logout").get(varifyJWT, logoutUser);
 router.route("/change-password").post(varifyJWT, changeCurrentPassword);
-router.route("/user-data").get(varifyJWT, getUserProfile);
+router.route("/profile").get(varifyJWT, getUserProfile);
 router.route("/update-profile").patch(varifyJWT, updateAccountDetails);
 router
   .route("/update-avatar")
@@ -50,6 +50,6 @@ router
   .route("/user-channel-details/:username")
   .get(varifyJWT, getUserChannelProfile);
 
-router.route("/get-watch-history").get(varifyJWT, getWatchHistory);
+router.route("/watch-history").get(varifyJWT, getWatchHistory);
 
 export default router;
